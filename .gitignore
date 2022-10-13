@@ -34,6 +34,7 @@
 # Logs
 *.log
 *.tlog
+log.txt
 
 #builds
 
