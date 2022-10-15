@@ -24,8 +24,8 @@ public:
     }
 
     string GetCurDateTime();
-    void __fastcall OpenLog(const std::string& FN);
-    void CloseLog();
+    void __fastcall OpenFileLog(const std::string& FN);
+    void CloseFileLog();
     void __fastcall WriteToLog(const std::string& str);
     void __fastcall WriteToLog(const std::string& str, int n);
     void __fastcall WriteToLog(const std::string& str, double d);
