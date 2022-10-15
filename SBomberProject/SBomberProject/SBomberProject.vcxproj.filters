@@ -24,9 +24,6 @@
     <ClCompile Include="Plane.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="MyTools.cpp">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
     <ClCompile Include="SBomber.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
@@ -45,6 +42,9 @@
     <ClCompile Include="ScreenSingleton.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
+    <ClCompile Include="FileLoggerSingleton.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameObject.h">
@@ -57,9 +57,6 @@
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="Plane.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="MyTools.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="SBomber.h">
@@ -81,6 +78,9 @@
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="ScreenSingleton.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="FileLoggerSingleton.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>
