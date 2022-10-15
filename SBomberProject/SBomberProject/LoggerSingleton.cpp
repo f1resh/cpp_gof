@@ -6,12 +6,12 @@ using namespace std;
 
 void __fastcall LoggerSingleton::OpenLog(const string& FN)
 {
-    FileLoggerSingleton::getInstance().OpenFileLog(FN);
+    FileLoggerSingleton::getInstance().OpenLogFile(FN);
 }
 
 void LoggerSingleton::CloseLog()
 {
-    FileLoggerSingleton::getInstance().CloseFileLog();
+    FileLoggerSingleton::getInstance().CloseLogFile();
 }
 
 void __fastcall LoggerSingleton::WriteToLog(const string& str)

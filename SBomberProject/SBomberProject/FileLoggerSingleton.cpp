@@ -9,12 +9,12 @@
 #include <fstream>
 #include <chrono>
 
-void __fastcall FileLoggerSingleton::OpenFileLog(const string& FN)
+void __fastcall FileLoggerSingleton::OpenLogFile(const string& FN)
 {
     logOut.open(FN, ios_base::out);
 }
 
-void FileLoggerSingleton::CloseFileLog()
+void FileLoggerSingleton::CloseLogFile()
 {
     if (logOut.is_open())
     {
