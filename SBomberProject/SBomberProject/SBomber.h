@@ -8,6 +8,7 @@
 #include "Ground.h"
 #include "Tank.h"
 #include "WinterFactory.h"
+#include "Command.h"
 
 class SBomber
 {
@@ -32,8 +33,9 @@ private:
     void CheckBombsAndGround();
     void __fastcall CheckDestoyableObjects(Bomb* pBomb);
 
-    void __fastcall DeleteDynamicObj(DynamicObject * pBomb);
-    void __fastcall DeleteStaticObj(GameObject* pObj);
+    //void __fastcall DeleteDynamicObj(DynamicObject * pBomb);
+    //void __fastcall DeleteStaticObj(GameObject* pObj);
+    void CommandExecutor(Command* pCommand);
 
 
     AbstractFactory *pFactory;
@@ -44,7 +46,7 @@ private:
     std::vector<DestroyableGroundObject*> FindDestoyableGroundObjects() const;
     std::vector<Bomb*> FindAllBombs() const;
 
-    void DropBomb();
+    //void DropBomb();
 
     std::vector<DynamicObject*> vecDynamicObj;
     std::vector<GameObject*> vecStaticObj;

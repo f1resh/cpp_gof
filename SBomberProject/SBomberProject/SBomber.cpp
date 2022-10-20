@@ -10,6 +10,7 @@
 #include "ScreenSingleton.h"
 #include "FileLoggerSingleton.h"
 #include "WinterFactory.h"
+#include "Command.h"
 
 using namespace std;
 
@@ -136,9 +137,11 @@ void SBomber::CheckBombsAndGround()
     {
         if (vecBombs[i]->GetY() >= y) // Пересечение бомбы с землей
         {
-            pGround->AddCrater(vecBombs[i]->GetX());
+            pGround->AddCrater(vecBombs[i]->GetX(),vecBombs[i]->GetWidth());
             CheckDestoyableObjects(vecBombs[i]);
-            DeleteDynamicObj(vecBombs[i]);
+            DeleteDynamicObjectCommand* pCommand = new DeleteDynamicObjectCommand(vecDynamicObj, vecBombs[i]);
+            CommandExecutor(pCommand);
+            //DeleteDynamicObj();
         }
     }
 
@@ -156,36 +159,13 @@ void SBomber::CheckDestoyableObjects(Bomb * pBomb)
         if (vecDestoyableObjects[i]->isInside(x1, x2))
         {
             score += vecDestoyableObjects[i]->GetScore();
-            DeleteStaticObj(vecDestoyableObjects[i]);
+            DeleteGameObjectCommand* pCommand = new DeleteGameObjectCommand(vecStaticObj, vecDestoyableObjects[i]);
+            CommandExecutor(pCommand);
+            //DeleteStaticObj();
         }
     }
 }
 
-void SBomber::DeleteDynamicObj(DynamicObject* pObj)
-{
-    auto it = vecDynamicObj.begin();
-    for (; it != vecDynamicObj.end(); it++)
-    {
-        if (*it == pObj)
-        {
-            vecDynamicObj.erase(it);
-            break;
-        }
-    }
-}
-
-void SBomber::DeleteStaticObj(GameObject* pObj)
-{
-    auto it = vecStaticObj.begin();
-    for (; it != vecStaticObj.end(); it++)
-    {
-        if (*it == pObj)
-        {
-            vecStaticObj.erase(it);
-            break;
-        }
-    }
-}
 
 vector<DestroyableGroundObject*> SBomber::FindDestoyableGroundObjects() const
 {
@@ -298,11 +278,20 @@ void SBomber::ProcessKBHit()
         break;
 
     case 'b':
-        DropBomb();
+        {
+        DropBombCommand* pDropBomb = new DropBombCommand(FindPlane(), vecDynamicObj, bombsNumber, score);
+        pDropBomb->SetParams(10, SMALL_CRATER_SIZE);
+        CommandExecutor(pDropBomb);
+        }
+        //DropBomb();
         break;
 
     case 'B':
-        DropBomb();
+        {
+        DropBombCommand* pDropBomb = new DropBombCommand(FindPlane(), vecDynamicObj, bombsNumber, score);
+        pDropBomb->SetParams(2, BIG_CRATER_SIZE);
+        CommandExecutor(pDropBomb);
+        }
         break;
 
     default:
@@ -351,24 +340,7 @@ void SBomber::TimeFinish()
     FileLoggerSingleton::getInstance().WriteToLog(string(__FUNCTION__) + " deltaTime = ", (int)deltaTime);
 }
 
-void SBomber::DropBomb()
-{
-    if (bombsNumber > 0)
-    {
-        FileLoggerSingleton::getInstance().WriteToLog(string(__FUNCTION__) + " was invoked");
-
-        Plane* pPlane = FindPlane();
-        double x = pPlane->GetX() + 4;
-        double y = pPlane->GetY() + 2;
-
-        Bomb* pBomb = new Bomb;
-        pBomb->SetDirection(0.3, 1);
-        pBomb->SetSpeed(2);
-        pBomb->SetPos(x, y);
-        pBomb->SetWidth(SMALL_CRATER_SIZE);
-
-        vecDynamicObj.push_back(pBomb);
-        bombsNumber--;
-        score -= Bomb::BombCost;
-    }
-}
+void SBomber::CommandExecutor(Command* pCommand) {
+    pCommand->Execute();
+    delete pCommand;
+};

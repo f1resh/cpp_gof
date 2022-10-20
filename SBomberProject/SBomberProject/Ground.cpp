@@ -9,6 +9,13 @@ using namespace std;
 
 void Crater::Draw() const
 {
+    if (width == BIG_CRATER_SIZE) // Рисование воронки в 13 символов шириной
+    {
+        ScreenSingleton::getInstance().GotoXY(x - 6, y + 1);
+        cout << "==         ==";
+        ScreenSingleton::getInstance().GotoXY(x - 4, y + 2);
+        cout << "=========";
+    }
     if (width == SMALL_CRATER_SIZE) // Рисование воронки в 9 символов шириной
     {
         ScreenSingleton::getInstance().GotoXY(x - 4, y + 1);
@@ -87,11 +94,11 @@ bool Ground::isInsideAnyCrater(double x) const
     return isInside;
 }
 
-void Ground::AddCrater(double xn)
+void Ground::AddCrater(double xn, uint16_t width)
 {
     Crater cr;
     cr.SetPos(int(xn), y);
-    cr.SetWidth(SMALL_CRATER_SIZE);
+    cr.SetWidth(width);
     vecCrates.push_back(cr);
 }
 
