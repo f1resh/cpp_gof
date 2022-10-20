@@ -14,8 +14,12 @@ public:
 
 	void Draw() const override;
 
-private:
+protected:
 
 	const uint16_t score = 30;
 };
 
+class WinterTank : public Tank {
+public:
+	void Draw() const override;
+};

@@ -7,6 +7,7 @@
 #include "Bomb.h"
 #include "Ground.h"
 #include "Tank.h"
+#include "WinterFactory.h"
 
 class SBomber
 {
@@ -33,6 +34,9 @@ private:
 
     void __fastcall DeleteDynamicObj(DynamicObject * pBomb);
     void __fastcall DeleteStaticObj(GameObject* pObj);
+
+
+    AbstractFactory *pFactory;
 
     Ground * FindGround() const;
     Plane * FindPlane() const;

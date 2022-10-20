@@ -94,3 +94,44 @@ void Ground::AddCrater(double xn)
     cr.SetWidth(SMALL_CRATER_SIZE);
     vecCrates.push_back(cr);
 }
+
+void WinterGround::Draw() const
+{
+    ScreenSingleton::getInstance().SetColor(CC_Blue);
+
+    const size_t bufSize = width + 1;
+    char* buf = new (nothrow) char[bufSize];
+    if (buf == nullptr)
+    {
+        return;
+    }
+
+    if (vecCrates.size() == 0)
+    {
+        ScreenSingleton::getInstance().GotoXY(x, y);
+        memset(buf, '=', bufSize);
+        buf[bufSize - 1] = '\0';
+        cout << buf;
+    }
+    else
+    {
+        const size_t X = size_t(x);
+        char c;
+        for (size_t i = X; i < width + X; i++)
+        {
+            c = (isInsideAnyCrater((double)i)) ? ' ' : '=';
+            buf[i - X] = c;
+        }
+
+        ScreenSingleton::getInstance().GotoXY((double)X, y);
+        buf[bufSize - 1] = '\0';
+        cout << buf;
+
+        for (size_t i = 0; i < vecCrates.size(); i++)
+        {
+            vecCrates[i].Draw();
+        }
+    }
+
+    delete[] buf;
+}
