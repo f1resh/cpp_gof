@@ -9,6 +9,9 @@
 #include "House.h"
 #include "ScreenSingleton.h"
 #include "FileLoggerSingleton.h"
+#include "WinterFactory.h"
+#include "Command.h"
+#include "BombDecorator.h"
 
 using namespace std;
 
@@ -43,26 +46,29 @@ SBomber::SBomber()
     pGUI->SetFinishX(offset + width - 4);
     vecStaticObj.push_back(pGUI);
 
-    Ground* pGr = new Ground;
-    const uint16_t groundY = maxY - 5;
-    pGr->SetPos(offset + 1, groundY);
-    pGr->SetWidth(width - 2);
-    vecStaticObj.push_back(pGr);
+    pFactory = new WinterFactory;
+    pFactory->CreateLevel1(vecStaticObj);
 
-    Tank* pTank = new Tank;
-    pTank->SetWidth(13);
-    pTank->SetPos(30, groundY - 1);
-    vecStaticObj.push_back(pTank);
+    //Ground* pGr = new Ground;
+    //const uint16_t groundY = maxY - 5;
+    //pGr->SetPos(offset + 1, groundY);
+    //pGr->SetWidth(width - 2);
+    //vecStaticObj.push_back(pGr);
+
+    //Tank* pTank = new Tank;
+    //pTank->SetWidth(13);
+    //pTank->SetPos(30, groundY - 1);
+    //vecStaticObj.push_back(pTank);
 
     //pTank = new Tank;
     //pTank->SetWidth(13);
     //pTank->SetPos(50, groundY - 1);
     //vecStaticObj.push_back(pTank);
 
-    House * pHouse = new House;
+   /* House * pHouse = new House;
     pHouse->SetWidth(13);
     pHouse->SetPos(50, groundY - 1);
-    vecStaticObj.push_back(pHouse);
+    vecStaticObj.push_back(pHouse);*/
 
     /*
     Bomb* pBomb = new Bomb;
@@ -91,6 +97,7 @@ SBomber::~SBomber()
             delete vecStaticObj[i];
         }
     }
+    delete pFactory;
 }
 
 void SBomber::MoveObjects()
@@ -124,22 +131,24 @@ void SBomber::CheckPlaneAndLevelGUI()
 
 void SBomber::CheckBombsAndGround() 
 {
-    vector<Bomb*> vecBombs = FindAllBombs();
+    vector<BombDecorator*> vecBombs = FindAllBombs();
     Ground* pGround = FindGround();
     const double y = pGround->GetY();
     for (size_t i = 0; i < vecBombs.size(); i++)
     {
         if (vecBombs[i]->GetY() >= y) // Пересечение бомбы с землей
         {
-            pGround->AddCrater(vecBombs[i]->GetX());
+            pGround->AddCrater(vecBombs[i]->GetX(),vecBombs[i]->GetWidth());
             CheckDestoyableObjects(vecBombs[i]);
-            DeleteDynamicObj(vecBombs[i]);
+            DeleteDynamicObjectCommand* pCommand = new DeleteDynamicObjectCommand(vecDynamicObj, vecBombs[i]);
+            CommandExecutor(pCommand);
+            //DeleteDynamicObj();
         }
     }
 
 }
 
-void SBomber::CheckDestoyableObjects(Bomb * pBomb)
+void SBomber::CheckDestoyableObjects(BombDecorator * pBomb)
 {
     vector<DestroyableGroundObject*> vecDestoyableObjects = FindDestoyableGroundObjects();
     const double size = pBomb->GetWidth();
@@ -151,36 +160,13 @@ void SBomber::CheckDestoyableObjects(Bomb * pBomb)
         if (vecDestoyableObjects[i]->isInside(x1, x2))
         {
             score += vecDestoyableObjects[i]->GetScore();
-            DeleteStaticObj(vecDestoyableObjects[i]);
+            DeleteGameObjectCommand* pCommand = new DeleteGameObjectCommand(vecStaticObj, vecDestoyableObjects[i]);
+            CommandExecutor(pCommand);
+            //DeleteStaticObj();
         }
     }
 }
 
-void SBomber::DeleteDynamicObj(DynamicObject* pObj)
-{
-    auto it = vecDynamicObj.begin();
-    for (; it != vecDynamicObj.end(); it++)
-    {
-        if (*it == pObj)
-        {
-            vecDynamicObj.erase(it);
-            break;
-        }
-    }
-}
-
-void SBomber::DeleteStaticObj(GameObject* pObj)
-{
-    auto it = vecStaticObj.begin();
-    for (; it != vecStaticObj.end(); it++)
-    {
-        if (*it == pObj)
-        {
-            vecStaticObj.erase(it);
-            break;
-        }
-    }
-}
 
 vector<DestroyableGroundObject*> SBomber::FindDestoyableGroundObjects() const
 {
@@ -223,13 +209,13 @@ Ground* SBomber::FindGround() const
     return nullptr;
 }
 
-vector<Bomb*> SBomber::FindAllBombs() const
+vector<BombDecorator*> SBomber::FindAllBombs() const
 {
-    vector<Bomb*> vecBombs;
+    vector<BombDecorator*> vecBombs;
 
     for (size_t i = 0; i < vecDynamicObj.size(); i++)
     {
-        Bomb* pBomb = dynamic_cast<Bomb*>(vecDynamicObj[i]);
+        BombDecorator* pBomb = dynamic_cast<BombDecorator*>(vecDynamicObj[i]);
         if (pBomb != nullptr)
         {
             vecBombs.push_back(pBomb);
@@ -293,11 +279,20 @@ void SBomber::ProcessKBHit()
         break;
 
     case 'b':
-        DropBomb();
+        {
+        DropBombCommand* pDropBomb = new DropBombCommand(FindPlane(), vecDynamicObj, bombsNumber, score);
+        pDropBomb->SetParams(10, SMALL_CRATER_SIZE);
+        CommandExecutor(pDropBomb);
+        }
+        //DropBomb();
         break;
 
     case 'B':
-        DropBomb();
+        {
+        DropBombCommand* pDropBomb = new DropBombCommand(FindPlane(), vecDynamicObj, bombsNumber, score);
+        pDropBomb->SetParams(2, BIG_CRATER_SIZE);
+        CommandExecutor(pDropBomb);
+        }
         break;
 
     default:
@@ -346,24 +341,7 @@ void SBomber::TimeFinish()
     FileLoggerSingleton::getInstance().WriteToLog(string(__FUNCTION__) + " deltaTime = ", (int)deltaTime);
 }
 
-void SBomber::DropBomb()
-{
-    if (bombsNumber > 0)
-    {
-        FileLoggerSingleton::getInstance().WriteToLog(string(__FUNCTION__) + " was invoked");
-
-        Plane* pPlane = FindPlane();
-        double x = pPlane->GetX() + 4;
-        double y = pPlane->GetY() + 2;
-
-        Bomb* pBomb = new Bomb;
-        pBomb->SetDirection(0.3, 1);
-        pBomb->SetSpeed(2);
-        pBomb->SetPos(x, y);
-        pBomb->SetWidth(SMALL_CRATER_SIZE);
-
-        vecDynamicObj.push_back(pBomb);
-        bombsNumber--;
-        score -= Bomb::BombCost;
-    }
-}
+void SBomber::CommandExecutor(Command* pCommand) {
+    pCommand->Execute();
+    delete pCommand;
+};

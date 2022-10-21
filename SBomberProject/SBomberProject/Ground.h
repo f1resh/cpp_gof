@@ -8,7 +8,8 @@
 
 enum CraterSize 
 { 
-	SMALL_CRATER_SIZE = 9 
+	SMALL_CRATER_SIZE = 9,
+	BIG_CRATER_SIZE = 13
 };
 
 //=============================================================================================================
@@ -35,12 +36,18 @@ public:
 
 	void Draw() const override;
 
-	void __fastcall AddCrater(double xn);
+	void __fastcall AddCrater(double xn, uint16_t width);
 
-private:
+protected:
 
 	bool __fastcall isInsideAnyCrater(double x) const;
 
 	std::vector<Crater> vecCrates;
+};
+
+
+class WinterGround : public Ground {
+public:
+	void Draw() const override;
 };
 
