@@ -140,6 +140,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Bomb.cpp" />
+    <ClCompile Include="BombDecorator.cpp" />
     <ClCompile Include="FileLoggerSingleton.cpp" />
     <ClCompile Include="Ground.cpp" />
     <ClCompile Include="House.cpp" />
@@ -153,6 +154,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Bomb.h" />
+    <ClInclude Include="BombDecorator.h" />
     <ClInclude Include="Command.h" />
     <ClInclude Include="FileLoggerSingleton.h" />
     <ClInclude Include="GameObject.h" />

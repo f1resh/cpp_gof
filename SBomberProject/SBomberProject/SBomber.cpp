@@ -11,6 +11,7 @@
 #include "FileLoggerSingleton.h"
 #include "WinterFactory.h"
 #include "Command.h"
+#include "BombDecorator.h"
 
 using namespace std;
 
@@ -130,7 +131,7 @@ void SBomber::CheckPlaneAndLevelGUI()
 
 void SBomber::CheckBombsAndGround() 
 {
-    vector<Bomb*> vecBombs = FindAllBombs();
+    vector<BombDecorator*> vecBombs = FindAllBombs();
     Ground* pGround = FindGround();
     const double y = pGround->GetY();
     for (size_t i = 0; i < vecBombs.size(); i++)
@@ -147,7 +148,7 @@ void SBomber::CheckBombsAndGround()
 
 }
 
-void SBomber::CheckDestoyableObjects(Bomb * pBomb)
+void SBomber::CheckDestoyableObjects(BombDecorator * pBomb)
 {
     vector<DestroyableGroundObject*> vecDestoyableObjects = FindDestoyableGroundObjects();
     const double size = pBomb->GetWidth();
@@ -208,13 +209,13 @@ Ground* SBomber::FindGround() const
     return nullptr;
 }
 
-vector<Bomb*> SBomber::FindAllBombs() const
+vector<BombDecorator*> SBomber::FindAllBombs() const
 {
-    vector<Bomb*> vecBombs;
+    vector<BombDecorator*> vecBombs;
 
     for (size_t i = 0; i < vecDynamicObj.size(); i++)
     {
-        Bomb* pBomb = dynamic_cast<Bomb*>(vecDynamicObj[i]);
+        BombDecorator* pBomb = dynamic_cast<BombDecorator*>(vecDynamicObj[i]);
         if (pBomb != nullptr)
         {
             vecBombs.push_back(pBomb);

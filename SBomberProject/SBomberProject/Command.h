@@ -7,6 +7,7 @@
 #include "Bomb.h"
 #include "Ground.h"
 #include "FileLoggerSingleton.h"
+#include "BombDecorator.h"
 
 
 class Command {
@@ -63,7 +64,7 @@ private:
 	std::vector<DynamicObject*>* _p_Vec;
 	uint16_t* _p_Bombs_Number;
 	int16_t* _p_score;
-	int _crater_size, _speed;
+	int _crater_size{0}, _speed{0};
 public:
 	DropBombCommand(const Plane* p_Plane, std::vector<DynamicObject*>& p_Vec, uint16_t& p_Bombs_Number, int16_t& p_score) :
 		_p_Plane(p_Plane), _p_Vec(&p_Vec), _p_Bombs_Number(&p_Bombs_Number), _p_score(&p_score) {};
@@ -81,13 +82,13 @@ public:
 			double x = _p_Plane->GetX() + 4;
 			double y = _p_Plane->GetY() + 2;
 
-			Bomb* pBomb = new Bomb;
-			pBomb->SetDirection(0.3, 1);
-			pBomb->SetSpeed(_speed);
-			pBomb->SetPos(x, y);
-			pBomb->SetWidth(_crater_size);
+			BombDecorator* pBombDec = new BombDecorator;
+			pBombDec->SetDirection(0.3, 1);
+			pBombDec->SetSpeed(_speed);
+			pBombDec->SetPos(x, y);
+			pBombDec->SetWidth(_crater_size);
 
-			_p_Vec->push_back(pBomb);
+			_p_Vec->push_back(pBombDec);
 			(*_p_Bombs_Number)--;
 			*_p_score -= Bomb::BombCost;
 		}
