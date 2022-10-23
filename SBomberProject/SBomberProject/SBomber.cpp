@@ -267,7 +267,7 @@ AbstractLevelGUI* SBomber::FindLevelGUI() const
 
 void SBomber::ClearLevelGUI()
 {
-    for (auto it = vecStaticObj.begin(); it <vecStaticObj.end(); ++it)
+    for (auto it = vecStaticObj.begin(); it != vecStaticObj.end(); ++it)
     {
         if (dynamic_cast<AbstractLevelGUI*>(*it) != nullptr) {
             vecStaticObj.erase(it);
