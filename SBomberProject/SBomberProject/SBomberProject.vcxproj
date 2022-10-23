@@ -139,6 +139,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AbstractLevelGUI.cpp" />
     <ClCompile Include="Bomb.cpp" />
     <ClCompile Include="FileLoggerSingleton.cpp" />
     <ClCompile Include="Ground.cpp" />
@@ -151,6 +152,7 @@
     <ClCompile Include="Tank.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AbstractLevelGUI.h" />
     <ClInclude Include="Bomb.h" />
     <ClInclude Include="FileLoggerSingleton.h" />
     <ClInclude Include="GameObject.h" />

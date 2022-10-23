@@ -1,6 +1,7 @@
 
 #include <conio.h>
 #include <windows.h>
+#include <algorithm>
 
 #include "SBomber.h"
 #include "Bomb.h"
@@ -9,6 +10,7 @@
 #include "House.h"
 #include "ScreenSingleton.h"
 #include "FileLoggerSingleton.h"
+
 
 using namespace std;
 
@@ -31,7 +33,7 @@ SBomber::SBomber()
     p->SetPos(5, 10);
     vecDynamicObj.push_back(p);
 
-    LevelGUI* pGUI = new LevelGUI;
+    AbstractLevelGUI* pGUI = new LevelGUI1;
     pGUI->SetParam(passedTime, fps, bombsNumber, score);
     const uint16_t maxX = ScreenSingleton::getInstance().GetMaxX();
     const uint16_t maxY = ScreenSingleton::getInstance().GetMaxY();
@@ -253,11 +255,11 @@ Plane* SBomber::FindPlane() const
     return nullptr;
 }
 
-LevelGUI* SBomber::FindLevelGUI() const
+AbstractLevelGUI* SBomber::FindLevelGUI() const
 {
     for (size_t i = 0; i < vecStaticObj.size(); i++)
     {
-        LevelGUI* p = dynamic_cast<LevelGUI*>(vecStaticObj[i]);
+        AbstractLevelGUI* p = dynamic_cast<AbstractLevelGUI*>(vecStaticObj[i]);
         if (p != nullptr)
         {
             return p;
@@ -265,6 +267,17 @@ LevelGUI* SBomber::FindLevelGUI() const
     }
 
     return nullptr;
+}
+
+void SBomber::ClearLevelGUI()
+{
+    for (auto it = vecStaticObj.begin(); it <vecStaticObj.end(); ++it)
+    {
+        if (dynamic_cast<AbstractLevelGUI*>(*it) != nullptr) {
+            vecStaticObj.erase(it);
+            return;
+        }
+    }
 }
 
 void SBomber::ProcessKBHit()
@@ -299,6 +312,39 @@ void SBomber::ProcessKBHit()
     case 'B':
         DropBomb();
         break;
+
+    case '1':
+    {
+        ClearLevelGUI();
+        AbstractLevelGUI* pGUI = new LevelGUI1();
+        pGUI->SetParam(passedTime, fps, bombsNumber, score);
+        const uint16_t maxX = ScreenSingleton::getInstance().GetMaxX();
+        const uint16_t maxY = ScreenSingleton::getInstance().GetMaxY();
+        const uint16_t offset = 3;
+        const uint16_t width = maxX - 7;
+        pGUI->SetPos(offset, offset);
+        pGUI->SetWidth(width);
+        pGUI->SetHeight(maxY - 4);
+        pGUI->SetFinishX(offset + width - 4);
+        vecStaticObj.push_back(pGUI);
+        break;
+    }
+    case '2':
+    {
+        ClearLevelGUI();
+        AbstractLevelGUI* pGUI = new LevelGUI2();
+        pGUI->SetParam(passedTime, fps, bombsNumber, score);
+        const uint16_t maxX = ScreenSingleton::getInstance().GetMaxX();
+        const uint16_t maxY = ScreenSingleton::getInstance().GetMaxY();
+        const uint16_t offset = 3;
+        const uint16_t width = maxX - 7;
+        pGUI->SetPos(offset, offset);
+        pGUI->SetWidth(width);
+        pGUI->SetHeight(maxY - 4);
+        pGUI->SetFinishX(offset + width - 4);
+        vecStaticObj.push_back(pGUI);
+        break;
+    }
 
     default:
         break;
