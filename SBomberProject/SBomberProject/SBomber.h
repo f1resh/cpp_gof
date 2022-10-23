@@ -30,6 +30,7 @@ private:
     void CheckPlaneAndLevelGUI();
     void CheckBombsAndGround();
     void ClearLevelGUI();
+    void SetLevelGUI(AbstractLevelGUI* pGUI);
     void __fastcall CheckDestoyableObjects(Bomb* pBomb);
 
     void __fastcall DeleteDynamicObj(DynamicObject * pBomb);
