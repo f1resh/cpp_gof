@@ -10,6 +10,7 @@
 #include "House.h"
 #include "ScreenSingleton.h"
 #include "FileLoggerSingleton.h"
+#include "BombIterator.h"
 
 
 using namespace std;
@@ -221,17 +222,12 @@ Ground* SBomber::FindGround() const
     return nullptr;
 }
 
-vector<Bomb*> SBomber::FindAllBombs() const
+vector<Bomb*> SBomber::FindAllBombs() 
 {
     vector<Bomb*> vecBombs;
 
-    for (size_t i = 0; i < vecDynamicObj.size(); i++)
-    {
-        Bomb* pBomb = dynamic_cast<Bomb*>(vecDynamicObj[i]);
-        if (pBomb != nullptr)
-        {
-            vecBombs.push_back(pBomb);
-        }
+    for (BombIterator it = this->Bomb_begin(); it != this->Bomb_end(); ++it) {
+        vecBombs.push_back(*it);
     }
 
     return vecBombs;
@@ -403,4 +399,15 @@ void SBomber::DropBomb()
         bombsNumber--;
         score -= Bomb::BombCost;
     }
+}
+
+BombIterator SBomber::Bomb_begin() {
+    BombIterator it(vecDynamicObj);
+    return it;
+}
+
+BombIterator SBomber::Bomb_end() {
+    BombIterator it(vecDynamicObj);
+    it.reset();
+    return it;
 }

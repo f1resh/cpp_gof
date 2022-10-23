@@ -141,6 +141,7 @@
   <ItemGroup>
     <ClCompile Include="AbstractLevelGUI.cpp" />
     <ClCompile Include="Bomb.cpp" />
+    <ClCompile Include="BombIterator.cpp" />
     <ClCompile Include="FileLoggerSingleton.cpp" />
     <ClCompile Include="Ground.cpp" />
     <ClCompile Include="House.cpp" />
@@ -154,6 +155,7 @@
   <ItemGroup>
     <ClInclude Include="AbstractLevelGUI.h" />
     <ClInclude Include="Bomb.h" />
+    <ClInclude Include="BombIterator.h" />
     <ClInclude Include="FileLoggerSingleton.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="DynamicObject.h" />
