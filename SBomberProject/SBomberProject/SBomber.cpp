@@ -1,14 +1,17 @@
 
 #include <conio.h>
 #include <windows.h>
+#include <algorithm>
 
 #include "SBomber.h"
 #include "Bomb.h"
 #include "Ground.h"
-#include "Tank.h"
 #include "House.h"
 #include "ScreenSingleton.h"
 #include "FileLoggerSingleton.h"
+#include "BombIterator.h"
+#include "TankAdapter.h"
+
 
 using namespace std;
 
@@ -31,17 +34,13 @@ SBomber::SBomber()
     p->SetPos(5, 10);
     vecDynamicObj.push_back(p);
 
-    LevelGUI* pGUI = new LevelGUI;
-    pGUI->SetParam(passedTime, fps, bombsNumber, score);
+    AbstractLevelGUI* pGUI = new LevelGUI1;
+    SetLevelGUI(pGUI);
+
     const uint16_t maxX = ScreenSingleton::getInstance().GetMaxX();
     const uint16_t maxY = ScreenSingleton::getInstance().GetMaxY();
     const uint16_t offset = 3;
     const uint16_t width = maxX - 7;
-    pGUI->SetPos(offset, offset);
-    pGUI->SetWidth(width);
-    pGUI->SetHeight(maxY - 4);
-    pGUI->SetFinishX(offset + width - 4);
-    vecStaticObj.push_back(pGUI);
 
     Ground* pGr = new Ground;
     const uint16_t groundY = maxY - 5;
@@ -49,7 +48,7 @@ SBomber::SBomber()
     pGr->SetWidth(width - 2);
     vecStaticObj.push_back(pGr);
 
-    Tank* pTank = new Tank;
+    TankAdapter* pTank = new TankAdapter;
     pTank->SetWidth(13);
     pTank->SetPos(30, groundY - 1);
     vecStaticObj.push_back(pTank);
@@ -185,11 +184,11 @@ void SBomber::DeleteStaticObj(GameObject* pObj)
 vector<DestroyableGroundObject*> SBomber::FindDestoyableGroundObjects() const
 {
     vector<DestroyableGroundObject*> vec;
-    Tank* pTank;
+    TankAdapter* pTank;
     House* pHouse;
     for (size_t i = 0; i < vecStaticObj.size(); i++)
     {
-        pTank = dynamic_cast<Tank*>(vecStaticObj[i]);
+        pTank = dynamic_cast<TankAdapter*>(vecStaticObj[i]);
         if (pTank != nullptr)
         {
             vec.push_back(pTank);
@@ -223,17 +222,12 @@ Ground* SBomber::FindGround() const
     return nullptr;
 }
 
-vector<Bomb*> SBomber::FindAllBombs() const
+vector<Bomb*> SBomber::FindAllBombs() 
 {
     vector<Bomb*> vecBombs;
 
-    for (size_t i = 0; i < vecDynamicObj.size(); i++)
-    {
-        Bomb* pBomb = dynamic_cast<Bomb*>(vecDynamicObj[i]);
-        if (pBomb != nullptr)
-        {
-            vecBombs.push_back(pBomb);
-        }
+    for (BombIterator it = this->Bomb_begin(); it != this->Bomb_end(); ++it) {
+        vecBombs.push_back(*it);
     }
 
     return vecBombs;
@@ -253,11 +247,11 @@ Plane* SBomber::FindPlane() const
     return nullptr;
 }
 
-LevelGUI* SBomber::FindLevelGUI() const
+AbstractLevelGUI* SBomber::FindLevelGUI() const
 {
     for (size_t i = 0; i < vecStaticObj.size(); i++)
     {
-        LevelGUI* p = dynamic_cast<LevelGUI*>(vecStaticObj[i]);
+        AbstractLevelGUI* p = dynamic_cast<AbstractLevelGUI*>(vecStaticObj[i]);
         if (p != nullptr)
         {
             return p;
@@ -265,6 +259,30 @@ LevelGUI* SBomber::FindLevelGUI() const
     }
 
     return nullptr;
+}
+
+void SBomber::ClearLevelGUI()
+{
+    for (auto it = vecStaticObj.begin(); it != vecStaticObj.end(); ++it)
+    {
+        if (dynamic_cast<AbstractLevelGUI*>(*it) != nullptr) {
+            vecStaticObj.erase(it);
+            return;
+        }
+    }
+}
+
+void SBomber::SetLevelGUI(AbstractLevelGUI* pGUI) {
+    pGUI->SetParam(passedTime, fps, bombsNumber, score);
+    const uint16_t maxX = ScreenSingleton::getInstance().GetMaxX();
+    const uint16_t maxY = ScreenSingleton::getInstance().GetMaxY();
+    const uint16_t offset = 3;
+    const uint16_t width = maxX - 7;
+    pGUI->SetPos(offset, offset);
+    pGUI->SetWidth(width);
+    pGUI->SetHeight(maxY - 4);
+    pGUI->SetFinishX(offset + width - 4);
+    vecStaticObj.push_back(pGUI);
 }
 
 void SBomber::ProcessKBHit()
@@ -299,6 +317,21 @@ void SBomber::ProcessKBHit()
     case 'B':
         DropBomb();
         break;
+
+    case '1':
+    {
+        ClearLevelGUI();
+        AbstractLevelGUI* pGUI = new LevelGUI1();
+        SetLevelGUI(pGUI);
+        break;
+    }
+    case '2':
+    {
+        ClearLevelGUI();
+        AbstractLevelGUI* pGUI = new LevelGUI2();
+        SetLevelGUI(pGUI);
+        break;
+    }
 
     default:
         break;
@@ -366,4 +399,15 @@ void SBomber::DropBomb()
         bombsNumber--;
         score -= Bomb::BombCost;
     }
+}
+
+BombIterator SBomber::Bomb_begin() {
+    BombIterator it(vecDynamicObj);
+    return it;
+}
+
+BombIterator SBomber::Bomb_end() {
+    BombIterator it(vecDynamicObj);
+    it.reset();
+    return it;
 }
