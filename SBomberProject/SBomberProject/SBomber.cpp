@@ -340,10 +340,11 @@ void SBomber::ProcessKBHit()
 
     case '+':
     {
-        if (FindPlaceForTree() != -1) {
+        int place = FindPlaceForTree();
+        if (place != -1) {
             DestroyableGroundObject* pTree = pTreeCreator->Create();
             pTree->SetWidth(5);
-            pTree->SetPos(static_cast<double>(FindPlaceForTree()), ScreenSingleton::getInstance().GetMaxY() - 6);
+            pTree->SetPos(static_cast<double>(place), ScreenSingleton::getInstance().GetMaxY() - 6);
             vecStaticObj.push_back(pTree);
         }
         else {
@@ -421,10 +422,9 @@ void SBomber::DropBomb()
 
 int SBomber::FindPlaceForTree() {
     const uint16_t tree_width = 5;
-    const uint16_t maxX = ScreenSingleton::getInstance().GetMaxX() - tree_width;
+    const uint16_t maxX = ScreenSingleton::getInstance().GetMaxX() - 9;
 
     vector<int> ground_arr(maxX,0);
-    std::fill_n(ground_arr.begin(), 5, 1);
     std::fill_n(ground_arr.begin(), 5, 1);
     for (const auto obj : FindDestoyableGroundObjects()) {
         for (int i = obj->GetX(); i < obj->GetX() + obj->GetWidth() - 1; ++i) {
@@ -433,7 +433,7 @@ int SBomber::FindPlaceForTree() {
     }
     bool isAvailableSpace = SpaceForTree(ground_arr, tree_width);
     while (isAvailableSpace) {
-        int rand = std::rand() % (maxX - tree_width - 1 );
+        int rand = std::rand() % (maxX - tree_width);
         vector<int>::const_iterator first = ground_arr.begin() + rand;
         vector<int>::const_iterator last = ground_arr.begin() + rand + tree_width;
         vector<int> new_vect(first, last);
