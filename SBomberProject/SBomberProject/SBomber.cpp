@@ -1,12 +1,16 @@
+#pragma once
 
 #include <conio.h>
 #include <windows.h>
+#include <stdlib.h>
 
 #include "SBomber.h"
 #include "Bomb.h"
 #include "Ground.h"
 #include "Tank.h"
 #include "House.h"
+#include "Tree.h"
+#include "TreeCreator.h"
 #include "ScreenSingleton.h"
 #include "FileLoggerSingleton.h"
 
@@ -43,21 +47,29 @@ SBomber::SBomber()
     pGUI->SetFinishX(offset + width - 4);
     vecStaticObj.push_back(pGUI);
 
+    pTreeCreator = new (std::nothrow) TreeCreatorA;
+
     Ground* pGr = new Ground;
     const uint16_t groundY = maxY - 5;
     pGr->SetPos(offset + 1, groundY);
     pGr->SetWidth(width - 2);
     vecStaticObj.push_back(pGr);
 
+    //TreeA* pTreeA = new TreeA;
+    //pTreeA->SetWidth(7);
+    //pTreeA->SetPos(20, groundY - 1);
+    //vecStaticObj.push_back(pTreeA);
+
+    //TreeB* pTreeB = new TreeB;
+    //pTreeB->SetWidth(5);
+    //pTreeB->SetPos(10, groundY - 1);
+    //vecStaticObj.push_back(pTreeB);
+
     Tank* pTank = new Tank;
     pTank->SetWidth(13);
     pTank->SetPos(30, groundY - 1);
     vecStaticObj.push_back(pTank);
 
-    //pTank = new Tank;
-    //pTank->SetWidth(13);
-    //pTank->SetPos(50, groundY - 1);
-    //vecStaticObj.push_back(pTank);
 
     House * pHouse = new House;
     pHouse->SetWidth(13);
@@ -187,6 +199,8 @@ vector<DestroyableGroundObject*> SBomber::FindDestoyableGroundObjects() const
     vector<DestroyableGroundObject*> vec;
     Tank* pTank;
     House* pHouse;
+    TreeA* pTreeA;
+    TreeB* pTreeB;
     for (size_t i = 0; i < vecStaticObj.size(); i++)
     {
         pTank = dynamic_cast<Tank*>(vecStaticObj[i]);
@@ -200,6 +214,18 @@ vector<DestroyableGroundObject*> SBomber::FindDestoyableGroundObjects() const
         if (pHouse != nullptr)
         {
             vec.push_back(pHouse);
+            continue;
+        }
+        pTreeA = dynamic_cast<TreeA*>(vecStaticObj[i]);
+        if (pTreeA != nullptr)
+        {
+            vec.push_back(pTreeA);
+            continue;
+        }
+        pTreeB = dynamic_cast<TreeB*>(vecStaticObj[i]);
+        if (pTreeB != nullptr)
+        {
+            vec.push_back(pTreeB);
             continue;
         }
     }
@@ -300,6 +326,31 @@ void SBomber::ProcessKBHit()
         DropBomb();
         break;
 
+    case '1':
+        FileLoggerSingleton::getInstance().WriteToLog("TreeCreator factory changed to TreeCreatorA");
+        delete pTreeCreator;
+        pTreeCreator = new (std::nothrow) TreeCreatorA;
+        break;
+
+    case '2':
+        FileLoggerSingleton::getInstance().WriteToLog("TreeCreator factory changed to TreeCreatorB");
+        delete pTreeCreator;
+        pTreeCreator = new (std::nothrow) TreeCreatorB;
+        break;
+
+    case '+':
+    {
+        if (FindPlaceForTree() != -1) {
+            DestroyableGroundObject* pTree = pTreeCreator->Create();
+            pTree->SetWidth(5);
+            pTree->SetPos(static_cast<double>(FindPlaceForTree()), ScreenSingleton::getInstance().GetMaxY() - 6);
+            vecStaticObj.push_back(pTree);
+        }
+        else {
+            FileLoggerSingleton::getInstance().WriteToLog("Unable to add new Tree");
+        }
+        break;
+    }
     default:
         break;
     }
@@ -366,4 +417,39 @@ void SBomber::DropBomb()
         bombsNumber--;
         score -= Bomb::BombCost;
     }
+}
+
+int SBomber::FindPlaceForTree() {
+    const uint16_t tree_width = 5;
+    const uint16_t maxX = ScreenSingleton::getInstance().GetMaxX() - tree_width;
+
+    vector<int> ground_arr(maxX,0);
+    std::fill_n(ground_arr.begin(), 5, 1);
+    std::fill_n(ground_arr.begin(), 5, 1);
+    for (const auto obj : FindDestoyableGroundObjects()) {
+        for (int i = obj->GetX(); i < obj->GetX() + obj->GetWidth() - 1; ++i) {
+            ground_arr[i] = 1;
+        }
+    }
+    bool isAvailableSpace = SpaceForTree(ground_arr, tree_width);
+    while (isAvailableSpace) {
+        int rand = std::rand() % (maxX - tree_width - 1 );
+        vector<int>::const_iterator first = ground_arr.begin() + rand;
+        vector<int>::const_iterator last = ground_arr.begin() + rand + tree_width;
+        vector<int> new_vect(first, last);
+        if (SpaceForTree(new_vect, tree_width)) return rand;
+    }
+    
+    return -1;
+}
+
+bool SBomber::SpaceForTree(const vector<int>& vec, int tree_width) {
+    if (vec.size() < tree_width) return false;
+    size_t counter = 0;
+    for (auto it = vec.begin(); it != vec.end(); ++it) {
+        if (*it == 0) ++counter;
+        if (*it == 1) counter = 0;
+        if (counter == tree_width) return true;
+    }
+    return false;
 }

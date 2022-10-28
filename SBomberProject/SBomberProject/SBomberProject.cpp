@@ -1,5 +1,7 @@
-﻿
+﻿#pragma once
 #include <conio.h>
+#include <time.h>
+#include <stdlib.h>
 
 #include "SBomber.h"
 #include "ScreenSingleton.h"
@@ -11,6 +13,8 @@ using namespace std;
 
 int main(void)
 {
+    std::srand(time(NULL));
+
     FileLoggerSingleton::getInstance().OpenLogFile("log.txt");
 
     SBomber game;
