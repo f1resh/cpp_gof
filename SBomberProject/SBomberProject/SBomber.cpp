@@ -1,17 +1,24 @@
+#pragma once
 
 #include <conio.h>
 #include <windows.h>
+#include <stdlib.h>
+#include <iostream>
 
-#include "MyTools.h"
 #include "SBomber.h"
 #include "Bomb.h"
 #include "Ground.h"
 #include "Tank.h"
 #include "House.h"
+#include "HouseBuilder.h"
+#include "HouseDirector.h"
+#include "Tree.h"
+#include "TreeCreator.h"
 #include "ScreenSingleton.h"
+#include "FileLoggerSingleton.h"
 
 using namespace std;
-using namespace MyTools;
+
 
 SBomber::SBomber()
     : exitFlag(false),
@@ -23,7 +30,7 @@ SBomber::SBomber()
     bombsNumber(10),
     score(0)
 {
-    WriteToLog(string(__FUNCTION__) + " was invoked");
+    FileLoggerSingleton::getInstance().WriteToLog(string(__FUNCTION__) + " was invoked");
 
     Plane* p = new Plane;
     p->SetDirection(1, 0.1);
@@ -43,26 +50,57 @@ SBomber::SBomber()
     pGUI->SetFinishX(offset + width - 4);
     vecStaticObj.push_back(pGUI);
 
+    pTreeCreator = new (std::nothrow) TreeCreatorA;
+
     Ground* pGr = new Ground;
     const uint16_t groundY = maxY - 5;
     pGr->SetPos(offset + 1, groundY);
     pGr->SetWidth(width - 2);
     vecStaticObj.push_back(pGr);
 
+    //TreeA* pTreeA = new TreeA;
+    //pTreeA->SetWidth(7);
+    //pTreeA->SetPos(20, groundY - 1);
+    //vecStaticObj.push_back(pTreeA);
+
+    //TreeB* pTreeB = new TreeB;
+    //pTreeB->SetWidth(5);
+    //pTreeB->SetPos(10, groundY - 1);
+    //vecStaticObj.push_back(pTreeB);
+
     Tank* pTank = new Tank;
     pTank->SetWidth(13);
     pTank->SetPos(30, groundY - 1);
     vecStaticObj.push_back(pTank);
 
-    //pTank = new Tank;
-    //pTank->SetWidth(13);
-    //pTank->SetPos(50, groundY - 1);
-    //vecStaticObj.push_back(pTank);
 
-    House * pHouse = new House;
-    pHouse->SetWidth(13);
+    HouseDirector* director = new HouseDirector;
+    HouseBuilderA* builder = new HouseBuilderA;
+    director->SetBuilder(builder);
+
+    int x;
+    cout << "What house do you want to build?" << endl
+        << "1 - House with big window and chimney" << endl
+        << "2 - House with small window" << endl
+        << "Other symbol - default house" << endl;
+    cin >> x;
+    if (x == 1) {
+        director->BuildBigWindowHouse();
+    }
+    else if (x == 2) {
+        director->BuildSmallWindowHouse();
+    }
+    else {
+        director->BuildUsualHouse();
+    }
+
+    House* pHouse = builder->GetHouse();
+    pHouse->SetWidth(14);
     pHouse->SetPos(50, groundY - 1);
     vecStaticObj.push_back(pHouse);
+
+    //House * pHouse = new House;
+
 
     /*
     Bomb* pBomb = new Bomb;
@@ -95,7 +133,7 @@ SBomber::~SBomber()
 
 void SBomber::MoveObjects()
 {
-    WriteToLog(string(__FUNCTION__) + " was invoked");
+    FileLoggerSingleton::getInstance().WriteToLog(string(__FUNCTION__) + " was invoked");
 
     for (size_t i = 0; i < vecDynamicObj.size(); i++)
     {
@@ -108,85 +146,19 @@ void SBomber::MoveObjects()
 
 void SBomber::CheckObjects()
 {
-    WriteToLog(string(__FUNCTION__) + " was invoked");
+    FileLoggerSingleton::getInstance().WriteToLog(string(__FUNCTION__) + " was invoked");
 
-    CheckPlaneAndLevelGUI();
-    CheckBombsAndGround();
+    exitFlag = _colDetector.CheckPlaneAndLevelGUI(*FindPlane(),*FindLevelGUI());
+    score += _colDetector.CheckBombsAndGround(FindDestoyableGroundObjects(), vecStaticObj, vecDynamicObj, FindAllBombs(), *FindGround());
 };
-
-void SBomber::CheckPlaneAndLevelGUI()
-{
-    if (FindPlane()->GetX() > FindLevelGUI()->GetFinishX())
-    {
-        exitFlag = true;
-    }
-}
-
-void SBomber::CheckBombsAndGround() 
-{
-    vector<Bomb*> vecBombs = FindAllBombs();
-    Ground* pGround = FindGround();
-    const double y = pGround->GetY();
-    for (size_t i = 0; i < vecBombs.size(); i++)
-    {
-        if (vecBombs[i]->GetY() >= y) // Пересечение бомбы с землей
-        {
-            pGround->AddCrater(vecBombs[i]->GetX());
-            CheckDestoyableObjects(vecBombs[i]);
-            DeleteDynamicObj(vecBombs[i]);
-        }
-    }
-
-}
-
-void SBomber::CheckDestoyableObjects(Bomb * pBomb)
-{
-    vector<DestroyableGroundObject*> vecDestoyableObjects = FindDestoyableGroundObjects();
-    const double size = pBomb->GetWidth();
-    const double size_2 = size / 2;
-    for (size_t i = 0; i < vecDestoyableObjects.size(); i++)
-    {
-        const double x1 = pBomb->GetX() - size_2;
-        const double x2 = x1 + size;
-        if (vecDestoyableObjects[i]->isInside(x1, x2))
-        {
-            score += vecDestoyableObjects[i]->GetScore();
-            DeleteStaticObj(vecDestoyableObjects[i]);
-        }
-    }
-}
-
-void SBomber::DeleteDynamicObj(DynamicObject* pObj)
-{
-    auto it = vecDynamicObj.begin();
-    for (; it != vecDynamicObj.end(); it++)
-    {
-        if (*it == pObj)
-        {
-            vecDynamicObj.erase(it);
-            break;
-        }
-    }
-}
-
-void SBomber::DeleteStaticObj(GameObject* pObj)
-{
-    auto it = vecStaticObj.begin();
-    for (; it != vecStaticObj.end(); it++)
-    {
-        if (*it == pObj)
-        {
-            vecStaticObj.erase(it);
-            break;
-        }
-    }
-}
 
 vector<DestroyableGroundObject*> SBomber::FindDestoyableGroundObjects() const
 {
     vector<DestroyableGroundObject*> vec;
     Tank* pTank;
     House* pHouse;
+    TreeA* pTreeA;
+    TreeB* pTreeB;
     for (size_t i = 0; i < vecStaticObj.size(); i++)
     {
         pTank = dynamic_cast<Tank*>(vecStaticObj[i]);
@@ -200,6 +172,18 @@ vector<DestroyableGroundObject*> SBomber::FindDestoyableGroundObjects() const
         if (pHouse != nullptr)
         {
             vec.push_back(pHouse);
+            continue;
+        }
+        pTreeA = dynamic_cast<TreeA*>(vecStaticObj[i]);
+        if (pTreeA != nullptr)
+        {
+            vec.push_back(pTreeA);
+            continue;
+        }
+        pTreeB = dynamic_cast<TreeB*>(vecStaticObj[i]);
+        if (pTreeB != nullptr)
+        {
+            vec.push_back(pTreeB);
             continue;
         }
     }
@@ -276,7 +260,7 @@ void SBomber::ProcessKBHit()
         c = _getch();
     }
 
-    WriteToLog(string(__FUNCTION__) + " was invoked. key = ", c);
+    FileLoggerSingleton::getInstance().WriteToLog(string(__FUNCTION__) + " was invoked. key = ", c);
 
     switch (c) {
 
@@ -300,6 +284,32 @@ void SBomber::ProcessKBHit()
         DropBomb();
         break;
 
+    case '1':
+        FileLoggerSingleton::getInstance().WriteToLog("TreeCreator factory changed to TreeCreatorA");
+        delete pTreeCreator;
+        pTreeCreator = new (std::nothrow) TreeCreatorA;
+        break;
+
+    case '2':
+        FileLoggerSingleton::getInstance().WriteToLog("TreeCreator factory changed to TreeCreatorB");
+        delete pTreeCreator;
+        pTreeCreator = new (std::nothrow) TreeCreatorB;
+        break;
+
+    case '+':
+    {
+        int place = FindPlaceForTree();
+        if (place != -1) {
+            DestroyableGroundObject* pTree = pTreeCreator->Create();
+            pTree->SetWidth(5);
+            pTree->SetPos(static_cast<double>(place), ScreenSingleton::getInstance().GetMaxY() - 6);
+            vecStaticObj.push_back(pTree);
+        }
+        else {
+            FileLoggerSingleton::getInstance().WriteToLog("Unable to add new Tree");
+        }
+        break;
+    }
     default:
         break;
     }
@@ -307,7 +317,7 @@ void SBomber::ProcessKBHit()
 
 void SBomber::DrawFrame()
 {
-    WriteToLog(string(__FUNCTION__) + " was invoked");
+    FileLoggerSingleton::getInstance().WriteToLog(string(__FUNCTION__) + " was invoked");
 
     for (size_t i = 0; i < vecDynamicObj.size(); i++)
     {
@@ -333,7 +343,7 @@ void SBomber::DrawFrame()
 
 void SBomber::TimeStart()
 {
-    WriteToLog(string(__FUNCTION__) + " was invoked");
+    FileLoggerSingleton::getInstance().WriteToLog(string(__FUNCTION__) + " was invoked");
     startTime = GetTickCount64();
 }
 
@@ -343,14 +353,14 @@ void SBomber::TimeFinish()
     deltaTime = uint16_t(finishTime - startTime);
     passedTime += deltaTime;
 
-    WriteToLog(string(__FUNCTION__) + " deltaTime = ", (int)deltaTime);
+    FileLoggerSingleton::getInstance().WriteToLog(string(__FUNCTION__) + " deltaTime = ", (int)deltaTime);
 }
 
 void SBomber::DropBomb()
 {
     if (bombsNumber > 0)
     {
-        WriteToLog(string(__FUNCTION__) + " was invoked");
+        FileLoggerSingleton::getInstance().WriteToLog(string(__FUNCTION__) + " was invoked");
 
         Plane* pPlane = FindPlane();
         double x = pPlane->GetX() + 4;
@@ -366,4 +376,38 @@ void SBomber::DropBomb()
         bombsNumber--;
         score -= Bomb::BombCost;
     }
+}
+
+int SBomber::FindPlaceForTree() {
+    const uint16_t tree_width = 5;
+    const uint16_t maxX = ScreenSingleton::getInstance().GetMaxX() - 9;
+
+    vector<int> ground_arr(maxX,0);
+    std::fill_n(ground_arr.begin(), 5, 1);
+    for (const auto obj : FindDestoyableGroundObjects()) {
+        for (int i = obj->GetX(); i < obj->GetX() + obj->GetWidth() - 1; ++i) {
+            ground_arr[i] = 1;
+        }
+    }
+    bool isAvailableSpace = SpaceForTree(ground_arr, tree_width);
+    while (isAvailableSpace) {
+        int rand = std::rand() % (maxX - tree_width);
+        vector<int>::const_iterator first = ground_arr.begin() + rand;
+        vector<int>::const_iterator last = ground_arr.begin() + rand + tree_width;
+        vector<int> new_vect(first, last);
+        if (SpaceForTree(new_vect, tree_width)) return rand;
+    }
+    
+    return -1;
+}
+
+bool SBomber::SpaceForTree(const vector<int>& vec, int tree_width) {
+    if (vec.size() < tree_width) return false;
+    size_t counter = 0;
+    for (auto it = vec.begin(); it != vec.end(); ++it) {
+        if (*it == 0) ++counter;
+        if (*it == 1) counter = 0;
+        if (counter == tree_width) return true;
+    }
+    return false;
 }

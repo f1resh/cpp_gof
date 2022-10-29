@@ -140,29 +140,37 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Bomb.cpp" />
+    <ClCompile Include="CollisionDetector.cpp" />
+    <ClCompile Include="FileLoggerSingleton.cpp" />
     <ClCompile Include="Ground.cpp" />
     <ClCompile Include="House.cpp" />
+    <ClCompile Include="HouseBuilder.cpp" />
     <ClCompile Include="LevelGUI.cpp" />
-    <ClCompile Include="MyTools.cpp" />
     <ClCompile Include="Plane.cpp" />
     <ClCompile Include="SBomber.cpp" />
     <ClCompile Include="SBomberProject.cpp" />
     <ClCompile Include="ScreenSingleton.cpp" />
     <ClCompile Include="Tank.cpp" />
+    <ClCompile Include="Tree.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Bomb.h" />
+    <ClInclude Include="CollisionDetector.h" />
+    <ClInclude Include="FileLoggerSingleton.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="DynamicObject.h" />
     <ClInclude Include="Ground.h" />
     <ClInclude Include="DestroyableGroundObject.h" />
     <ClInclude Include="House.h" />
+    <ClInclude Include="HouseBuilder.h" />
+    <ClInclude Include="HouseDirector.h" />
     <ClInclude Include="LevelGUI.h" />
-    <ClInclude Include="MyTools.h" />
     <ClInclude Include="Plane.h" />
     <ClInclude Include="SBomber.h" />
     <ClInclude Include="ScreenSingleton.h" />
     <ClInclude Include="Tank.h" />
+    <ClInclude Include="Tree.h" />
+    <ClInclude Include="TreeCreator.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

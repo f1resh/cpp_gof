@@ -7,6 +7,8 @@
 #include "Bomb.h"
 #include "Ground.h"
 #include "Tank.h"
+#include "TreeCreator.h"
+#include "CollisionDetector.h"
 
 class SBomber
 {
@@ -27,12 +29,10 @@ public:
 
 private:
 
-    void CheckPlaneAndLevelGUI();
-    void CheckBombsAndGround();
-    void __fastcall CheckDestoyableObjects(Bomb* pBomb);
+    int FindPlaceForTree();
+    bool SpaceForTree(const std::vector<int>&, int);
 
-    void __fastcall DeleteDynamicObj(DynamicObject * pBomb);
-    void __fastcall DeleteStaticObj(GameObject* pObj);
+    TreeCreator* pTreeCreator;
 
     Ground * FindGround() const;
     Plane * FindPlane() const;
@@ -44,6 +44,8 @@ private:
 
     std::vector<DynamicObject*> vecDynamicObj;
     std::vector<GameObject*> vecStaticObj;
+
+    CollisionDetector _colDetector;
     
     bool exitFlag;
 

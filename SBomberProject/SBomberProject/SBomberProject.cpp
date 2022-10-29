@@ -1,9 +1,11 @@
-﻿
+﻿#pragma once
 #include <conio.h>
+#include <time.h>
+#include <stdlib.h>
 
 #include "SBomber.h"
-#include "MyTools.h"
 #include "ScreenSingleton.h"
+#include "FileLoggerSingleton.h"
 
 using namespace std;
 
@@ -11,7 +13,9 @@ using namespace std;
 
 int main(void)
 {
-    MyTools::OpenLogFile("log.txt");
+    std::srand(time(NULL));
+
+    FileLoggerSingleton::getInstance().OpenLogFile("log.txt");
 
     SBomber game;
 
@@ -33,7 +37,7 @@ int main(void)
 
     } while (!game.GetExitFlag());
 
-    MyTools::CloseLogFile();
+    FileLoggerSingleton::getInstance().CloseLogFile();
 
     return 0;
 }
