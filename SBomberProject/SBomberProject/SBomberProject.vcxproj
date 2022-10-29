@@ -143,6 +143,7 @@
     <ClCompile Include="FileLoggerSingleton.cpp" />
     <ClCompile Include="Ground.cpp" />
     <ClCompile Include="House.cpp" />
+    <ClCompile Include="HouseBuilder.cpp" />
     <ClCompile Include="LevelGUI.cpp" />
     <ClCompile Include="Plane.cpp" />
     <ClCompile Include="SBomber.cpp" />
@@ -159,6 +160,8 @@
     <ClInclude Include="Ground.h" />
     <ClInclude Include="DestroyableGroundObject.h" />
     <ClInclude Include="House.h" />
+    <ClInclude Include="HouseBuilder.h" />
+    <ClInclude Include="HouseDirector.h" />
     <ClInclude Include="LevelGUI.h" />
     <ClInclude Include="Plane.h" />
     <ClInclude Include="SBomber.h" />

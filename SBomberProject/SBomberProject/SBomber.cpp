@@ -3,12 +3,15 @@
 #include <conio.h>
 #include <windows.h>
 #include <stdlib.h>
+#include <iostream>
 
 #include "SBomber.h"
 #include "Bomb.h"
 #include "Ground.h"
 #include "Tank.h"
 #include "House.h"
+#include "HouseBuilder.h"
+#include "HouseDirector.h"
 #include "Tree.h"
 #include "TreeCreator.h"
 #include "ScreenSingleton.h"
@@ -71,10 +74,33 @@ SBomber::SBomber()
     vecStaticObj.push_back(pTank);
 
 
-    House * pHouse = new House;
-    pHouse->SetWidth(13);
+    HouseDirector* director = new HouseDirector;
+    HouseBuilderA* builder = new HouseBuilderA;
+    director->SetBuilder(builder);
+
+    int x;
+    cout << "What house do you want to build?" << endl
+        << "1 - House with big window and chimney" << endl
+        << "2 - House with small window" << endl
+        << "Other symbol - default house" << endl;
+    cin >> x;
+    if (x == 1) {
+        director->BuildBigWindowHouse();
+    }
+    else if (x == 2) {
+        director->BuildSmallWindowHouse();
+    }
+    else {
+        director->BuildUsualHouse();
+    }
+
+    House* pHouse = builder->GetHouse();
+    pHouse->SetWidth(14);
     pHouse->SetPos(50, groundY - 1);
     vecStaticObj.push_back(pHouse);
+
+    //House * pHouse = new House;
+
 
     /*
     Bomb* pBomb = new Bomb;
