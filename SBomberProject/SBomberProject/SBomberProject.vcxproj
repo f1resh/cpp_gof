@@ -140,6 +140,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Bomb.cpp" />
+    <ClCompile Include="DynamicObject.cpp" />
     <ClCompile Include="Ground.cpp" />
     <ClCompile Include="House.cpp" />
     <ClCompile Include="LevelGUI.cpp" />
@@ -149,6 +150,7 @@
     <ClCompile Include="SBomberProject.cpp" />
     <ClCompile Include="ScreenSingleton.cpp" />
     <ClCompile Include="Tank.cpp" />
+    <ClCompile Include="Visitor.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Bomb.h" />
@@ -163,6 +165,7 @@
     <ClInclude Include="SBomber.h" />
     <ClInclude Include="ScreenSingleton.h" />
     <ClInclude Include="Tank.h" />
+    <ClInclude Include="Visitor.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

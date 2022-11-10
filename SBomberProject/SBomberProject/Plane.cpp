@@ -3,8 +3,10 @@
 
 #include "Plane.h"
 #include "ScreenSingleton.h"
+#include "Visitor.h"
 
 using namespace std;
+
 
 void Plane::Draw() const
 {
@@ -18,3 +20,9 @@ void Plane::Draw() const
     ScreenSingleton::getInstance().GotoXY(x + 3, y + 1);
     cout << "////";
 }
+
+void __fastcall Plane::Accept(const Visitor& v)
+{
+    v.log(*this);
+}
+
