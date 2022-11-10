@@ -135,6 +135,7 @@ void SBomber::CheckBombsAndGround()
             pGround->AddCrater(vecBombs[i]->GetX());
             DestroyableGroundObject* destrObj = vecBombs[i]->CheckDestoyableObjects();
             DeleteDynamicObj(vecBombs[i]);
+
             if (destrObj != nullptr) {
                 score += destrObj->GetScore();
                 DeleteStaticObj(destrObj);
@@ -165,6 +166,11 @@ void SBomber::DeleteStaticObj(GameObject* pObj)
     {
         if (*it == pObj)
         {
+
+            for (auto bomb : FindAllBombs()) {
+                bomb->RemoveObserver(dynamic_cast<DestroyableGroundObject*>(pObj));
+            }
+
             vecStaticObj.erase(it);
             break;
         }

@@ -23,6 +23,11 @@ void Bomb::AddObserver(DestroyableGroundObject* object)
     obsList.push_back(object);
 }
 
+void Bomb::RemoveObserver(DestroyableGroundObject* object)
+{
+    obsList.remove(object);
+}
+
 DestroyableGroundObject* Bomb::CheckDestoyableObjects()
 {
 
