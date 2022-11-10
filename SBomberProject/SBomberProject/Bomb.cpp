@@ -17,3 +17,23 @@ void __fastcall Bomb::Accept(const Visitor& v)
 {
     v.log(*this);
 }
+
+void Bomb::AddObserver(DestroyableGroundObject* object)
+{
+    obsList.push_back(object);
+}
+
+DestroyableGroundObject* Bomb::CheckDestoyableObjects()
+{
+
+    const double size = this->GetWidth();
+    const double x1 = this->GetX() - (size / 2);
+    const double x2 = x1 + size;
+
+    for (const auto obj : obsList) {
+        if (obj->HandleInsideCheck(x1, x2)) {
+            return obj;
+        }
+    }
+    return nullptr;
+}

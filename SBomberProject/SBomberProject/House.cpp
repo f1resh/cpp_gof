@@ -6,7 +6,7 @@
 
 using namespace std;
 
-bool House::isInside(double x1, double x2) const
+bool House::HandleInsideCheck(double x1, double x2) const
 {
 	const double XBeg = x + 2;
 	const double XEnd = x + width - 1;

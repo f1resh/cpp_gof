@@ -1,6 +1,8 @@
 #pragma once
 
 #include "DynamicObject.h"
+#include "DestroyableGroundObject.h"
+#include <list>
 //#include "Visitor.h"
 
 class Visitor;
@@ -15,7 +17,13 @@ public:
 
 	void Accept(const Visitor &v) override;
 
+	void AddObserver(DestroyableGroundObject*);
+
+	DestroyableGroundObject* CheckDestoyableObjects();
+
 private:
+
+	std::list<DestroyableGroundObject*> obsList;
 
 };
 
