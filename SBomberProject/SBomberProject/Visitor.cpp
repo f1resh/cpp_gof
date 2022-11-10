@@ -14,5 +14,5 @@ void LogVisitor::log(const Bomb& b) const {
 void LogVisitor::log(const Plane& p) const {
 	std::string speed = std::to_string(p.GetSpeed());
 	std::string direction = std::to_string(p.GetDirection().first) + "," + std::to_string(p.GetDirection().second);
-	MyTools::WriteToLog("Bomb has speed " + speed + " with direction:[" + direction + "]");
+	MyTools::WriteToLog("Plane has speed " + speed + " with direction:[" + direction + "]");
 };
