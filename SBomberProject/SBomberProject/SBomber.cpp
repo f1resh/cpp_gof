@@ -32,6 +32,7 @@ SBomber::SBomber()
     vecDynamicObj.push_back(p);
 
     LevelGUI* pGUI = new LevelGUI;
+    Mediator* mediator = new Mediator(pGUI);
     pGUI->SetParam(passedTime, fps, bombsNumber, score);
     const uint16_t maxX = ScreenSingleton::getInstance().GetMaxX();
     const uint16_t maxY = ScreenSingleton::getInstance().GetMaxY();
@@ -52,6 +53,7 @@ SBomber::SBomber()
     Tank* pTank = new Tank;
     pTank->SetWidth(13);
     pTank->SetPos(30, groundY - 1);
+    pTank->SetMediator(mediator);
     vecStaticObj.push_back(pTank);
 
     //pTank = new Tank;
@@ -177,6 +179,7 @@ void SBomber::DeleteStaticObj(GameObject* pObj)
         if (*it == pObj)
         {
             vecStaticObj.erase(it);
+            delete pObj;
             break;
         }
     }
