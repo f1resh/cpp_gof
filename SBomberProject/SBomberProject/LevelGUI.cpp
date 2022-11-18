@@ -3,6 +3,8 @@
 #include "LevelGUI.h"
 #include "ScreenSingleton.h"
 
+#define MESSAGE_LIVE_TIME 3000
+
 using namespace std;
 
 void LevelGUI::Draw() const
@@ -39,6 +41,22 @@ void LevelGUI::Draw() const
     cout << "BombsNum: " << bombsNumber;
     ScreenSingleton::getInstance().GotoXY(62, 1);
     cout << "Score: " << score;
+
+    if (!messageQueue.empty()) {
+        ScreenSingleton::getInstance().GotoXY(4, 22);
+        cout << "Tank: " << messageQueue.front();
+    }
+}
+
+void LevelGUI::PushMessageToQueue(std::string message)
+{
+    messageQueue.push(message);
+}
+
+void LevelGUI::ClearMessageQueue()
+{
+    //std::queue<std::string>().swap(messageQueue);
+    messageQueue = std::queue<std::string>();
 }
 
 void __fastcall LevelGUI::SetParam(uint64_t passedTimeNew, uint64_t fpsNew, uint16_t bombsNumberNew, int16_t scoreNew)
@@ -47,4 +65,10 @@ void __fastcall LevelGUI::SetParam(uint64_t passedTimeNew, uint64_t fpsNew, uint
     fps = fpsNew;
     bombsNumber = bombsNumberNew;
     score = scoreNew;
+
+    //Remove message from queue every 3 seconds
+    if (!messageQueue.empty() && passedTime  / MESSAGE_LIVE_TIME > messageCounter) {
+        messageQueue.pop();
+        messageCounter = (int)(passedTime  / MESSAGE_LIVE_TIME);
+    }
 }

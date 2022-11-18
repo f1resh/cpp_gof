@@ -4,6 +4,7 @@ class GameObject {
 public:
 
     GameObject() : x(0.0), y(0.0), width(0) { }
+    virtual ~GameObject() {};
 
     virtual void Draw() const = 0;
 

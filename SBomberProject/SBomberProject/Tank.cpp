@@ -1,8 +1,8 @@
-
 #include <iostream>
 
 #include "Tank.h"
 #include "ScreenSingleton.h"
+
 
 using namespace std;
 
@@ -40,4 +40,24 @@ void Tank::Draw() const
 	cout << "    #####";
 	ScreenSingleton::getInstance().GotoXY(x,y);
 	cout << " ###########";
+
+
+	//Randomize sending message 
+	if ((rand() % 100) < 10) {
+		pMediator->Notify(this, GenerateMessage());
+	}
+}
+
+void Tank::SetMediator(Mediator* mediator)
+{
+	pMediator = mediator;
+}
+
+void Tank::RemoveMediator() {
+	pMediator = nullptr;
+}
+
+std::string Tank::GenerateMessage() const
+{
+	return strArray[rand()%MAX_MESSAGES];
 }

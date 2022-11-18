@@ -25,13 +25,19 @@ SBomber::SBomber()
 {
     WriteToLog(string(__FUNCTION__) + " was invoked");
 
-    Plane* p = new Plane;
+    Plane* p;
+    int random = rand() % 2;
+    if (random == 0) p = new BigPlane;
+    else p = new ColorPlane;
+
+    // = new Plane;
     p->SetDirection(1, 0.1);
     p->SetSpeed(4);
     p->SetPos(5, 10);
     vecDynamicObj.push_back(p);
 
     LevelGUI* pGUI = new LevelGUI;
+    mediator = new Mediator(pGUI);
     pGUI->SetParam(passedTime, fps, bombsNumber, score);
     const uint16_t maxX = ScreenSingleton::getInstance().GetMaxX();
     const uint16_t maxY = ScreenSingleton::getInstance().GetMaxY();
@@ -52,6 +58,7 @@ SBomber::SBomber()
     Tank* pTank = new Tank;
     pTank->SetWidth(13);
     pTank->SetPos(30, groundY - 1);
+    pTank->SetMediator(mediator);
     vecStaticObj.push_back(pTank);
 
     //pTank = new Tank;
@@ -84,10 +91,13 @@ SBomber::~SBomber()
         }
     }
 
+    delete mediator;
+
     for (size_t i = 0; i < vecStaticObj.size(); i++)
     {
         if (vecStaticObj[i] != nullptr)
         {
+            if (dynamic_cast<Tank*>(vecStaticObj[i]) != nullptr) dynamic_cast<Tank*>(vecStaticObj[i])->RemoveMediator();
             delete vecStaticObj[i];
         }
     }
@@ -177,6 +187,7 @@ void SBomber::DeleteStaticObj(GameObject* pObj)
         if (*it == pObj)
         {
             vecStaticObj.erase(it);
+            delete pObj;
             break;
         }
     }

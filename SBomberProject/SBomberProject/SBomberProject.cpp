@@ -5,12 +5,17 @@
 #include "MyTools.h"
 #include "ScreenSingleton.h"
 
+#include <stdlib.h>
+#include <time.h>
+
 using namespace std;
 
 //========================================================================================================================
 
 int main(void)
 {
+
+    srand((unsigned)time(NULL));
     MyTools::OpenLogFile("log.txt");
 
     SBomber game;
