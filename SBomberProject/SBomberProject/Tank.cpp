@@ -53,6 +53,10 @@ void Tank::SetMediator(Mediator* mediator)
 	pMediator = mediator;
 }
 
+void Tank::RemoveMediator() {
+	pMediator = nullptr;
+}
+
 std::string Tank::GenerateMessage() const
 {
 	return strArray[rand()%MAX_MESSAGES];

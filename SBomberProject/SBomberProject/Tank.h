@@ -12,7 +12,7 @@ class Tank : public DestroyableGroundObject
 {
 public:
 	~Tank() {
-		pMediator->Notify(this, "I'm dead x_x");
+		if (pMediator) pMediator->Notify(this, "I'm dead x_x");
 	}
 
 	bool __fastcall isInside(double x1, double x2) const override;
@@ -22,6 +22,7 @@ public:
 	void Draw() const override;
 
 	void SetMediator(Mediator*);
+	void RemoveMediator();
 	std::string GenerateMessage() const;
 
 private:

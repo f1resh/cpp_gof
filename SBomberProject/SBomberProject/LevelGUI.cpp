@@ -55,7 +55,8 @@ void LevelGUI::PushMessageToQueue(std::string message)
 
 void LevelGUI::ClearMessageQueue()
 {
-    std::queue<std::string>().swap(messageQueue);
+    //std::queue<std::string>().swap(messageQueue);
+    messageQueue = std::queue<std::string>();
 }
 
 void __fastcall LevelGUI::SetParam(uint64_t passedTimeNew, uint64_t fpsNew, uint16_t bombsNumberNew, int16_t scoreNew)
