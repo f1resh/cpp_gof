@@ -8,7 +8,6 @@
 #include "Ground.h"
 #include "Tank.h"
 #include "House.h"
-#include "ScreenSingleton.h"
 
 using namespace std;
 using namespace MyTools;
@@ -33,8 +32,8 @@ SBomber::SBomber()
 
     LevelGUI* pGUI = new LevelGUI;
     pGUI->SetParam(passedTime, fps, bombsNumber, score);
-    const uint16_t maxX = ScreenSingleton::getInstance().GetMaxX();
-    const uint16_t maxY = ScreenSingleton::getInstance().GetMaxY();
+    const uint16_t maxX = GetMaxX();
+    const uint16_t maxY = GetMaxY(); 
     const uint16_t offset = 3;
     const uint16_t width = maxX - 7;
     pGUI->SetPos(offset, offset);
@@ -54,14 +53,14 @@ SBomber::SBomber()
     pTank->SetPos(30, groundY - 1);
     vecStaticObj.push_back(pTank);
 
-    //pTank = new Tank;
-    //pTank->SetWidth(13);
-    //pTank->SetPos(50, groundY - 1);
-    //vecStaticObj.push_back(pTank);
+    pTank = new Tank;
+    pTank->SetWidth(13);
+    pTank->SetPos(50, groundY - 1);
+    vecStaticObj.push_back(pTank);
 
     House * pHouse = new House;
     pHouse->SetWidth(13);
-    pHouse->SetPos(50, groundY - 1);
+    pHouse->SetPos(80, groundY - 1);
     vecStaticObj.push_back(pHouse);
 
     /*
@@ -325,7 +324,7 @@ void SBomber::DrawFrame()
         }
     }
 
-    ScreenSingleton::getInstance().GotoXY(0, 0);
+    GotoXY(0, 0);
     fps++;
 
     FindLevelGUI()->SetParam(passedTime, fps, bombsNumber, score);

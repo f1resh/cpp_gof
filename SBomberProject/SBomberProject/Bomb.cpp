@@ -2,13 +2,14 @@
 #include <iostream>
 
 #include "Bomb.h"
-#include "ScreenSingleton.h"
+#include "MyTools.h"
 
 using namespace std;
+using namespace MyTools;
 
 void Bomb::Draw() const
 {
-    ScreenSingleton::getInstance().SetColor(CC_LightMagenta);
-    ScreenSingleton::getInstance().GotoXY(x, y);
+    MyTools::SetColor(CC_LightMagenta);
+    GotoXY(x, y);
     cout << "*";
 }
