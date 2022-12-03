@@ -1,6 +1,7 @@
 
 #include <conio.h>
 #include <windows.h>
+#include <iostream>
 
 #include "MyTools.h"
 #include "SBomber.h"
@@ -12,6 +13,40 @@
 
 using namespace std;
 using namespace MyTools;
+
+static const size_t ScrollHeight = 30;
+static const size_t ScrollWidth = 30;
+static const char* ppScroll[ScrollHeight] = {
+"						",
+"						",
+"						",
+"						",
+"						",
+"						",
+"						",
+"						",
+"						",
+" Project manager:      ",
+"    Ivan Vasilevich    ",
+"						",
+" Developers:           ",
+"    Nikolay Gavrilov   ",
+"    Dmitriy Sidelnikov ",
+"    Eva Brown          ",
+"						",
+" Designers:            ",
+"    Anna Pachenkova    ",
+"    Elena Shvaiber     ",
+"						",
+"						",
+"						",
+"						",
+"						",
+"						",
+"						",
+"						",
+"						",
+"						" };
 
 SBomber::SBomber()
     : exitFlag(false),
@@ -300,9 +335,39 @@ void SBomber::ProcessKBHit()
         DropBomb();
         break;
 
+    case 'd':
+    {
+        vector<DestroyableGroundObject*> list = FindDestoyableGroundObjects();
+        DestroyableGroundObject* obj = list[MyTools::RandomNumberTo(list.size())]->Clone();
+
+        int x = FindPlaceForClone(list, obj->GetWidth());
+
+        if (x != -1) {
+            obj->SetPos(x, ScreenSingleton::getInstance().GetMaxY() - 6);
+            vecStaticObj.push_back(obj);
+        }
+    }
+        break;
+
     default:
         break;
     }
+}
+
+int SBomber::FindPlaceForClone(vector<DestroyableGroundObject*> list, int width) {
+    int result = -1;
+    for (int i = 0; i < 1000; ++i) {
+        bool flag = true;
+        result = 5 + MyTools::RandomNumberTo(ScreenSingleton::getInstance().GetMaxX() - width - 8);
+        for (const auto destrObj : list) {
+            if (destrObj->isInside(result, result +width)) {
+                flag = false;
+                result = -1;
+            }
+        }
+        if (flag) break;
+    }
+    return result;
 }
 
 void SBomber::DrawFrame()
@@ -367,3 +432,26 @@ void SBomber::DropBomb()
         score -= Bomb::BombCost;
     }
 }
+
+void SBomber::AnimateScrolling()
+{
+    WriteToLog(string(__FUNCTION__) + " was invoked");
+    const size_t windowHeight = 10; // Размер окна для скроллинга
+    const size_t startX = ScreenSingleton::getInstance().GetMaxX() / 2 - ScrollWidth / 2;
+    const size_t startY = ScreenSingleton::getInstance().GetMaxY() / 2 - windowHeight / 2;
+    double curPos = 0;
+    do {
+        TimeStart();
+        ScreenSingleton::getInstance().ClrScr();
+        for (int i = 0; i < windowHeight; ++i) {
+            std::cout << ppScroll[static_cast<int>(curPos) + i] << std::endl;
+        }
+        ScreenSingleton::getInstance().GotoXY(0, 0);
+        TimeFinish();
+        curPos += deltaTime * 0.0015;
+    } while (!_kbhit() && int(curPos) <= (ScrollHeight - windowHeight));
+    ScreenSingleton::getInstance().ClrScr();
+}
+
+
+
