@@ -8,8 +8,8 @@ using namespace std;
 
 bool House::isInside(double x1, double x2) const
 {
-	const double XBeg = x + 2;
-	const double XEnd = x + width - 1;
+	const double XBeg = x;
+	const double XEnd = x + width;
 
 	if (x1 < XBeg && x2 > XEnd)
 	{
@@ -25,6 +25,8 @@ bool House::isInside(double x1, double x2) const
 	{
 		return true;
 	}
+
+	if (x1 == XBeg || x2 == XEnd) return true;
 
 	return false;
 }
@@ -44,4 +46,13 @@ void House::Draw() const
 	cout << "#          #";
 	ScreenSingleton::getInstance().GotoXY(x, y);
 	cout << "############";
+}
+
+DestroyableGroundObject* House::Clone() const
+{
+	return new House(*this);
+}
+
+House::House(const House& house) {
+	this->width = house.width;
 }

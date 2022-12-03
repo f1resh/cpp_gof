@@ -66,6 +66,12 @@ namespace MyTools {
         }
     }
 
+    int __fastcall RandomNumberTo(int max_number)
+    {
+        return std::rand() % (max_number);
+    }
+
+
     //=============================================================================================
 
 

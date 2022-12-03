@@ -1,5 +1,7 @@
 ﻿
 #include <conio.h>
+#include <time.h>
+#include <stdlib.h>
 
 #include "SBomber.h"
 #include "MyTools.h"
@@ -11,6 +13,7 @@ using namespace std;
 
 int main(void)
 {
+    std::srand(time(NULL));
     MyTools::OpenLogFile("log.txt");
 
     SBomber game;
@@ -32,7 +35,7 @@ int main(void)
         game.TimeFinish();
 
     } while (!game.GetExitFlag());
-
+    game.AnimateScrolling();
     MyTools::CloseLogFile();
 
     return 0;

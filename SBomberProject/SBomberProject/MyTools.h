@@ -17,6 +17,8 @@ namespace MyTools {
 
 	void __fastcall WriteToLog(const std::string& str, double d);
 
+	int __fastcall RandomNumberTo(int);
+
 	//=============================================================================================
 
 };
