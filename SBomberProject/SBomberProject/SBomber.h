@@ -24,6 +24,7 @@ public:
     void DrawFrame();
     void MoveObjects();
     void CheckObjects();
+    void AnimateScrolling();
 
 private:
 
@@ -33,6 +34,8 @@ private:
 
     void __fastcall DeleteDynamicObj(DynamicObject * pBomb);
     void __fastcall DeleteStaticObj(GameObject* pObj);
+
+    int FindPlaceForClone(std::vector<DestroyableGroundObject*>, int);
 
     Ground * FindGround() const;
     Plane * FindPlane() const;
@@ -50,4 +53,6 @@ private:
     uint64_t startTime, finishTime, passedTime;
     uint16_t bombsNumber, deltaTime, fps;
     int16_t score;
+
+    
 };

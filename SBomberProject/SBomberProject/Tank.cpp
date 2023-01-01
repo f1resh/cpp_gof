@@ -8,8 +8,8 @@ using namespace std;
 
 bool Tank::isInside(double x1, double x2) const
 {
-	const double XBeg = x + 2;
-	const double XEnd = x + width - 1;
+	const double XBeg = x - 2;
+	const double XEnd = x + width;
 
 	if (x1 < XBeg && x2 > XEnd)
 	{
@@ -26,6 +26,8 @@ bool Tank::isInside(double x1, double x2) const
 		return true;
 	}
 
+	if (x1 == XBeg || x2 == XEnd) return true;
+
 	return false;
 }
 
@@ -40,4 +42,13 @@ void Tank::Draw() const
 	cout << "    #####";
 	ScreenSingleton::getInstance().GotoXY(x,y);
 	cout << " ###########";
+}
+
+DestroyableGroundObject* Tank::Clone() const
+{
+	return new Tank(*this);
+}
+
+Tank::Tank(const Tank& tank) {
+	this->width = tank.width;
 }
